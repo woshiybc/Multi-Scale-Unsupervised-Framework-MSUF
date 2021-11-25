@@ -103,11 +103,11 @@ def train():
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ''''''
-    data_path = 'E:/Tang/final_data/'
+    data_path = ''
     batch_size = 2
     train_epoch = 340
     start_train_epoch = 0
-    loss_info_save_path = 'E:/Tang/final_data/train/loss.txt'
+    loss_info_save_path = ''
     ''''''
     dataset = MyDataSet('train', data_path)
     dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
