@@ -1,5 +1,5 @@
 # Multi-Scale-Unsupervised-Framework-MSUF
-This page is undergoing editing, the code and data will be uploaded later.
+This page is undergoing editing, the data will be uploaded later.
 ## Introduction
 network.py: Our DNN architectures, implemented on three scales.
 
