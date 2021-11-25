@@ -43,13 +43,6 @@ def pil_to_tensor(p):
 #     return constrain
 
 
-def ComputeLoss(reference, sensed_tran, sensed, reference_inv_tran):
-    loss_1 = NCC_loss(reference, sensed_tran)
-    loss_2 = NCC_loss(sensed, reference_inv_tran)
-    loss = loss_1 + loss_2
-    return loss
-
-
 def AffineTransform(reference, sensed, affine_matrix):
     sensed_grid = F.affine_grid(affine_matrix, sensed.size())
     sensed_tran = F.grid_sample(sensed, sensed_grid)
