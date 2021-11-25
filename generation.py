@@ -63,12 +63,12 @@ def pil_to_tensor(p):
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ref_file_path = 'E:/Tang/optical-SAR/Optical_rename'
-    sen_file_path = 'E:/Tang/optical-SAR/SAR_rename'
+    ref_file_path = ''
+    sen_file_path = ''
     ref_file_name = get_filename(ref_file_path, '.jpg')
     sen_file_name = get_filename(sen_file_path, '.jpg')
     assert len(ref_file_name) == len(sen_file_name)
-    save_path = 'E:/Tang/final_data/train'
+    save_path = ''
     imgpair_label_save_path = os.path.join(save_path, 'imgpair.txt')
     with open(imgpair_label_save_path, "a") as file:
         for i in range(len(ref_file_name)):
