@@ -1,5 +1,7 @@
 # Multi-Scale-Unsupervised-Framework-MSUF
 This page is undergoing editing, the data will be uploaded later.
+## Preparation
+Our code is performed in Pytorch 1.8.0 basis on Python 3.8.
 ## Introduction
 network.py: Our DNN architectures, implemented on three scales.
 
