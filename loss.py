@@ -7,8 +7,8 @@ from torch.autograd import Variable
 
 
 def ComputeLoss(reference, sensed_tran, sensed, reference_inv_tran):
-    loss_1 = CFOG_NCC(reference, sensed_tran)
-    loss_2 = CFOG_NCC(sensed, reference_inv_tran)
+    loss_1 = CFOG_SSD(reference, sensed_tran)
+    loss_2 = CFOG_SSD(sensed, reference_inv_tran)
     loss = loss_1 + loss_2
     return loss
 
@@ -39,24 +39,20 @@ def DSC(pred, target):
     return (2. * intersection + smooth) / (m1.sum() + m2.sum() + smooth)
 
 
-def CFOG_NCC(i, j):
-    x = torch.ge(i, 1)
-    x = torch.tensor(x, dtype=torch.float32)
-    y = torch.ge(j, 1)
+def CFOG_NCC(i, j):  # sar_flow, optical
+    x = torch.ge(i.squeeze(0).squeeze(0), 1)
+    x = torch.tensor(x, dtype=torch.float32)  # 掩膜
+    y = torch.ge(j.squeeze(0).squeeze(0), 1)
     y = torch.tensor(y, dtype=torch.float32)
     z = torch.mul(x, y)
+    num = z[z.ge(1)].size()[0]
     i = torch.mul(i, z)
     j = torch.mul(j, z)
-    Loss= torch.Tensor(np.zeros(len(z))).cuda()
-    CFOG_sar = des.CFOG(i)
-    CFOG_optical = des.CFOG(j)
-    for k in range(len(z)):
-        a = z[k]
-        num = a[a.ge(1)].size()[0]
-        loss = gncc_loss(CFOG_sar[k], CFOG_optical[k])/num*10000
-        Loss[k] = loss
-    l = torch.mean(Loss)
-    return l
+    CFOG_sar = torch.mul(des.CFOG(i), z)
+    CFOG_optical = torch.mul(des.CFOG(j), z)
+    # loss = gncc_loss(MIND_sar, MIND_optical)
+    loss = gncc_loss(CFOG_sar, CFOG_optical)*512*512/num
+    return loss
 
 
 def gncc_loss(I, J, eps=1e-5):
