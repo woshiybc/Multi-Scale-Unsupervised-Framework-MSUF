@@ -74,8 +74,8 @@ def CFOG_SSD(i, j):
     num = z[z.ge(1)].size()[0]
     i = torch.mul(i, z)
     j = torch.mul(j, z)
-    CFOG_sar = des.CFOG(i)
-    CFOG_optical = des.CFOG(j)
+    CFOG_sar = torch.mul(des.CFOG(i), z)
+    CFOG_optical = torch.mul(des.CFOG(j), z)
     SSD_loss = nn.MSELoss(reduction='sum')
     loss = SSD_loss(CFOG_sar, CFOG_optical)/num
     return loss
