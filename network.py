@@ -189,3 +189,99 @@ class Scale3TPsReg(nn.Module):
         line3_out = self.line3(line3_input)
         tps = self.fc(line3_out).view(-1, 2, 3)
         return tps
+    
+    
+    class DeepFeatureGenerator(nn.Module):
+    def __init__(self):
+        super(DeepFeatureGenerator, self).__init__()
+        self.localization = ConvBlock(2, 16, 3, 1, 1)
+        self.scale_1 = nn.Sequential(
+            nn.AdaptiveAvgPool2d(256),
+            nn.Upsample(scale_factor=2, mode='bilinear')
+        )
+        self.scale_2 = nn.Sequential(
+            nn.AdaptiveAvgPool2d(128),
+            nn.Upsample(scale_factor=4, mode='bilinear')
+        )
+        self.scale_3 = nn.Sequential(
+            nn.AdaptiveAvgPool2d(64),
+            nn.Upsample(scale_factor=8, mode='bilinear')
+        )
+
+    def forward(self, x, y):
+        out = torch.cat([x, y], dim=1)
+        out = self.localization(out)
+        out_1 = self.scale_1(out)
+        out_2 = self.scale_1(out)
+        out_3 = self.scale_1(out)
+        out = torch.cat([out, out_1, out_2, out_3], dim=1)
+        out = self.attentionmechanism(out)
+        return out
+
+
+class ParameterRegression(nn.Module):
+    def __init__(self):
+        super(ParameterRegression, self).__init__()
+        self.localization = nn.Sequential(
+            ConvBlock(64, 64, 3, 2, 3, dilation=3),
+            ConvBlock(64, 64, 3, 2, 2, dilation=2),
+            ConvBlock(64, 64, 3, 2, 2, dilation=2),
+            ConvBlock(64, 64, 3, 2, 1),
+            ConvBlock(64, 64, 3, 2, 1),
+            ConvBlock(64, 64, 3, 2, 1),
+            ConvBlock(64, 64, 3, 2, 1)
+        )
+        self.fc = nn.Conv2d(64, 6, kernel_size=4, stride=1, padding=0)
+        self.fc.weight.data.zero_()
+        self.fc.bias.data.copy_(torch.tensor([1, 0, 0, 0, 1, 0], dtype=torch.float))
+
+    def forward(self, x):
+        out = self.localization(x)
+        out = self.fc(out)
+        out = out.view(-1, 2, 3)
+        return out
+
+
+def AffineTransform(reference, sensed, affine_matrix):
+    sensed_grid = F.affine_grid(affine_matrix, sensed.size())
+    sensed_tran = F.grid_sample(sensed, sensed_grid)
+    a = torch.tensor([[[0, 0, 1]]], dtype=torch.float)
+    affine_matrix = torch.cat([affine_matrix, a], dim=1)
+    inv_affine_matrix = inverse(affine_matrix)
+    inv_affine_matrix_1 = inv_affine_matrix[:, 0:2, :]
+    reference_grid = F.affine_grid(inv_affine_matrix_1, reference.size())
+    reference_inv_tran = F.grid_sample(reference, reference_grid)
+    return sensed_tran, reference_inv_tran, inv_affine_matrix
+
+
+def ComputeLoss(reference, sensed_tran, sensed, reference_inv_tran, batch_size):
+    loss = 0
+    for i in range(batch_size):
+        loss_1 = NCC_loss(reference[i].unsqueeze(0), sensed_tran[i].unsqueeze(0))
+        loss_2 = NCC_loss(sensed[i].unsqueeze(0), reference_inv_tran[i].unsqueeze(0))
+        loss = loss + loss_1 + loss_2
+    loss = loss/batch_size
+    return loss
+
+
+def ComputeConstrain(matrix):
+    a = matrix[:, 0, 0]
+    b = matrix[:, 0, 1]
+    c = matrix[:, 1, 0]
+    d = matrix[:, 1, 1]
+    lamda = (a+d)/torch.sqrt(4-(b-c)**2)
+    constrain = torch.abs((a/lamda)**2 + b**2 + c**2 + (d/lamda)**2 - 2)/2
+    return constrain
+
+
+def show_plot(iteration, loss, name):
+    plt.plot(iteration, loss)
+    plt.savefig('./%s' % name)
+    plt.show()
+
+
+def ComputeError(TPs_GT, TPs_Pre):
+    TPs_Pre = TPs_Pre[:, 0:2, :]
+    D = TPs_Pre-TPs_GT
+    return torch.sqrt(torch.sum(torch.mul(D, D))/6)
+
