@@ -16,13 +16,9 @@ def ComputeLoss(reference, sensed_tran, sensed, reference_inv_tran):
 def gradient_loss(s, penalty='l2'):
     dy = torch.abs(s[:, :, 1:, :] - s[:, :, :-1, :])
     dx = torch.abs(s[:, :, :, 1:] - s[:, :, :, :-1])
-
-
     if (penalty == 'l2'):
         dy = dy * dy
         dx = dx * dx
-
-
     d = torch.mean(dx) + torch.mean(dy)
     return d / 2.0
 
@@ -41,7 +37,7 @@ def DSC(pred, target):
 
 def CFOG_NCC(i, j):  # sar_flow, optical
     x = torch.ge(i.squeeze(0).squeeze(0), 1)
-    x = torch.tensor(x, dtype=torch.float32)  # 掩膜
+    x = torch.tensor(x, dtype=torch.float32)
     y = torch.ge(j.squeeze(0).squeeze(0), 1)
     y = torch.tensor(y, dtype=torch.float32)
     z = torch.mul(x, y)
@@ -113,10 +109,6 @@ def cc_loss(x, y):
 
 
 def Get_Ja(flow):
-    '''
-    Calculate the Jacobian value at each point of the displacement map having
-    size of b*h*w*d*3 and in the cubic volumn of [-1, 1]^3
-    '''
     D_y = (flow[:, 1:, :-1, :-1, :] - flow[:, :-1, :-1, :-1, :])
     D_x = (flow[:, :-1, 1:, :-1, :] - flow[:, :-1, :-1, :-1, :])
     D_z = (flow[:, :-1, :-1, 1:, :] - flow[:, :-1, :-1, :-1, :])
@@ -127,9 +119,6 @@ def Get_Ja(flow):
 
 
 def NJ_loss(ypred):
-    '''
-    Penalizing locations where Jacobian has negative determinants
-    '''
     Neg_Jac = 0.5 * (torch.abs(Get_Ja(ypred)) - Get_Ja(ypred))
     return torch.sum(Neg_Jac)
 
