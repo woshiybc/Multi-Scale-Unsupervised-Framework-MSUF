@@ -25,4 +25,4 @@ Optical-Infrared dataset: later uploading.
 
 Optical-SAR dataset: later uploading.
 
-Optical-RasterMap dataset: later uploading.
+Optical-RasterMap dataset: https://drive.google.com/file/d/1kIqXy3-KCTLwaPaxTrEFKSt49LvZnWAU/view?usp=sharing
