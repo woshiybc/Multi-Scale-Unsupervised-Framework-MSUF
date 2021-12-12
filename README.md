@@ -21,8 +21,8 @@ The multi-modal original image pairs adopted in the paper have been to Google Dr
 
 Optical-Optical dataset: https://drive.google.com/file/d/1U0fpCnizcl33TgdRwvfQpqOr1Ojcj6a9/view?usp=sharing
 
-Optical-Infrared dataset:
+Optical-Infrared dataset: later uploading.
 
-Optical-SAR dataset:
+Optical-SAR dataset: later uploading.
 
-Optical-RasterMap dataset:
+Optical-RasterMap dataset: later uploading.
