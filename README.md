@@ -23,6 +23,7 @@ The multi-modal original image pairs adopted in the paper have been uploaded to 
 ![Proposed Framework in the Paper](https://github.com/yeyuanxin110/Multi-Scale-Unsupervised-Framework-MSUF/blob/main/Optical-Optical.png)
 Optical-Optical dataset: https://drive.google.com/file/d/1U0fpCnizcl33TgdRwvfQpqOr1Ojcj6a9/view?usp=sharing
 
+![Proposed Framework in the Paper](https://github.com/yeyuanxin110/Multi-Scale-Unsupervised-Framework-MSUF/blob/main/Optical-Infrared.png)
 Optical-Infrared dataset: later uploading.
 
 Optical-SAR dataset: later uploading.
