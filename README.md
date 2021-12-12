@@ -27,4 +27,5 @@ Optical-Infrared dataset: later uploading.
 
 Optical-SAR dataset: later uploading.
 
+![Proposed Framework in the Paper](https://github.com/yeyuanxin110/Multi-Scale-Unsupervised-Framework-MSUF/blob/main/Optical-Map.png)
 Optical-RasterMap dataset: https://drive.google.com/file/d/1kIqXy3-KCTLwaPaxTrEFKSt49LvZnWAU/view?usp=sharing
